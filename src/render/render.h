@@ -3,6 +3,7 @@
 struct {
 	int render_cursor;
 	int cursor_pos;
+	int page_offset;
 } typedef render_settings;
 
-void out_buffer(char* buffer, render_settings settings);
+int out_buffer(char* buffer, render_settings settings);

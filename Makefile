@@ -3,7 +3,7 @@ OBJ_DIR = obj
 
 CC = clang
 CFLAGS = -O3 -std=c23 -D_XOPEN_SOURCE=500 -g
-TARGET = fish_editor
+TARGET = build/fish_editor
 
 LDFLAGS = -O3
 

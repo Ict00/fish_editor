@@ -12,7 +12,8 @@ struct {
 	int height;
 } typedef termsize_t;
 
-
+char* read_file(const char* path);
+int is_file(const char* path);
 termsize_t get_size();
 int get_escape_seq();
 void typing(int enable);

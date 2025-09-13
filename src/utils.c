@@ -5,6 +5,7 @@
 #include <termios.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 
 int get_escape_seq() {
 	// First was already taken :(
@@ -78,6 +79,43 @@ void insert_at_pos(char **dest, int pos, char ch) {
 	new_dest[b] = 0;
 	free(*dest);
 	*dest = new_dest;
+}
+
+char* read_file(const char *file_name) {
+	FILE* file = fopen(file_name, "r");
+
+	if (!file) {
+		fprintf(stderr, "Failed to open file '%s'\n", file_name);
+		exit(-1);
+		return "";
+	}
+
+	fseek(file, 0, SEEK_END);
+	long length = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	char* content = malloc(length + 1);
+
+	if (!content) {
+		fclose(file);
+		return "";
+	}
+	
+	fread(content, 1, length, file);
+	content[length] = 0;
+	
+	fclose(file);
+
+	return content;
+}
+
+int is_file(const char *path) {
+	struct stat path_stat;
+	
+	if (stat(path, &path_stat) != 0) {
+		return 0;
+	}
+	return S_ISREG(path_stat.st_mode);
 }
 
 void append_to_str(char **dest, char *str) {
