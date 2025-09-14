@@ -12,6 +12,9 @@
 
 FILE* opened = NULL;
 char* buffer;
+
+char* filename = "buffer";
+
 int program_running = 1;
 int cursor_pos = 1;
 int page_offset = 0;
@@ -29,12 +32,15 @@ int main(int argc, char** argv) {
 		if (is_file(argv[0])) {
 			free(buffer);
 			buffer = read_file(argv[0]);
+			filename = argv[0];
 		}
 		
 		opened = fopen(argv[0], "w");
 	}
 
-	printf("\x1b[2J\x1b[H%s", buffer);
+	printf("\x1b[2J\x1b[H");
+	out_bar(mode, filename);
+	cursor_pos = out_buffer(buffer, (render_settings){.cursor_pos=cursor_pos, .render_cursor=mode, .page_offset=page_offset});
 
 	while (program_running) {
 		char a = getchar();
@@ -103,6 +109,7 @@ int main(int argc, char** argv) {
 						printf("\x1b[2J\x1b[HName of file: ");
 						char fname[512];
 						scanf("%s", fname);
+						filename = strdup(fname);
 						opened = fopen(fname, "w");
 						printf("\x1b[2J\x1b[H"); fflush(stdout);
 						typing(1);
@@ -119,7 +126,8 @@ int main(int argc, char** argv) {
 				break;
 		}
 render:
-
+		printf("\x1b[2J\x1b[H");
+		out_bar(mode, filename);
 		cursor_pos = out_buffer(buffer, (render_settings){.cursor_pos=cursor_pos, .render_cursor=mode, .page_offset=page_offset});
 	}
 
