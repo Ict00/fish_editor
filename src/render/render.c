@@ -52,10 +52,11 @@ int out_buffer(char *buffer, render_settings settings) {
 	}
 	
 	if (settings.render_cursor && !cursor_rendered) {
-		printf("\x1b[47;30m \x1b[0m");
+		printf("\x1b[47;30m \x1b[0m"); fflush(stdout);
+		return i;
 	}
 
 	fflush(stdout);
 
-	return i;
+	return settings.cursor_pos;
 }
