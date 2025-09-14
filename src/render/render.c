@@ -1,15 +1,24 @@
 #include "render.h"
 #include <stdio.h>
+#include <string.h>
 
-#define WIDTH 80
-#define HEIGHT 23
+int WIDTH = 80;
+int HEIGHT = 23;
 
 void out_line(int num) {
 	printf("\x1b[1m%-3d \x1b[0m", num);
 }
 
 void out_bar(int mode, char *file_out) {
-	printf("\x1b[47;30mMODE: %s | FILE: %-61s\x1b[0m\n", mode == 0 ? "NONE" : "TEXT", file_out);
+	char bar[512];
+	sprintf(bar, "\x1b[47;30m MODE: %s | FILE: ", mode ? "TEXT" : "NONE");
+	char format[512];
+	sprintf(format, "%s%ds\x1b[0m\n", "%-", WIDTH-20);
+	char add[512];
+	sprintf(add, format, file_out);
+	strcat(bar, add);
+	printf("%s", bar);
+	//printf("\x1b[47;30mMODE: %s | FILE: %-61s\x1b[0m\n", mode == 0 ? "NONE" : "TEXT", file_out);
 }
 
 int out_buffer(char *buffer, render_settings settings) {
@@ -68,7 +77,7 @@ int out_buffer(char *buffer, render_settings settings) {
 
 		x++;
 		if (x >= WIDTH) {
-			x = 0;
+			x = 4;
 			printf("\n    ");	
 			z++;
 		}
@@ -77,6 +86,10 @@ int out_buffer(char *buffer, render_settings settings) {
 		}
 	}
 	
+	if (!first_line_rendered) {
+		out_line(line_counter);
+	}
+
 	if (settings.render_cursor && !cursor_rendered) {
 		printf("\x1b[47;30m \x1b[0m"); fflush(stdout);
 		return i;

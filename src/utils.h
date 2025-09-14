@@ -6,15 +6,11 @@
 #define ARROW_LEFT 2
 #define ARROW_RIGHT 3
 #define ESCAPE 4
-
-struct {
-	int width;
-	int height;
-} typedef termsize_t;
+#define DELETE 5
 
 char* read_file(const char* path);
 int is_file(const char* path);
-termsize_t get_size();
+void get_size();
 int get_escape_seq();
 void typing(int enable);
 void insert_at_pos(char** dest, int pos, char ch);

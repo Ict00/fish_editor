@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "render/render.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +24,9 @@ int get_escape_seq() {
 		case 'B': return ARROW_DOWN;
 		case 'C': return ARROW_RIGHT;
 		case 'D': return ARROW_LEFT;
+		case '3':
+			  getchar(); // skip
+			  return DELETE;
 		default:
 			// We haven't learned how to utilize other escape sequences so we drop them
 			ungetc(third, stdin);
@@ -30,6 +34,17 @@ int get_escape_seq() {
 	}
 
 	return -1;
+}
+
+void get_size() {
+	struct winsize w;
+
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
+		WIDTH = w.ws_col;
+		HEIGHT = w.ws_row-2;
+	} else {
+		perror("Error getting terminal size");
+	}
 }
 
 void typing(int enable) {

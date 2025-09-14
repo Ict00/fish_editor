@@ -21,6 +21,7 @@ int page_offset = 0;
 int mode = TEXT;
 
 int main(int argc, char** argv) {
+	get_size();
 	typing(1);
 
 	buffer = malloc(sizeof(char));
@@ -49,6 +50,11 @@ int main(int argc, char** argv) {
 			case TEXT:
 				if (a == 27) {
 					switch (get_escape_seq()) {
+						case DELETE:
+							if (cursor_pos >= 0 && cursor_pos < strlen(buffer)) {
+								erase_at_pos(&buffer, cursor_pos);
+							}
+							goto render;
 						case ESCAPE:
 							mode = NONE;
 							goto render;
@@ -79,23 +85,45 @@ int main(int argc, char** argv) {
 					}
 					goto render;
 				}
+				
 				if (cursor_pos > strlen(buffer))
 					cursor_pos = strlen(buffer);
 				
 				if (strlen(buffer) == 0) {
-					appendc_to_str(&buffer, a);
-					cursor_pos = 1;
+					if (a == '\t') {
+						append_to_str(&buffer, "    ");
+						cursor_pos = 4;
+					}
+					else {
+						appendc_to_str(&buffer, a);
+						cursor_pos = 1;
+					}
+
 					goto render;
 				}
 
 				if (cursor_pos == strlen(buffer)) {
-					appendc_to_str(&buffer, a);
-					cursor_pos++;
+					if (a != '\t') {
+						appendc_to_str(&buffer, a);
+						cursor_pos++;
+					}
+					else {
+						append_to_str(&buffer, "    ");
+						cursor_pos += 4;
+					}
 					goto render;
 				}
 				if (cursor_pos-1 >= 0) {
-					insert_at_pos(&buffer, cursor_pos-1, a);
-					cursor_pos++;
+					if (a != '\t') {
+						insert_at_pos(&buffer, cursor_pos-1, a);
+						cursor_pos++;
+					}
+					else {
+						for (int c = 0; c < 4; c++) {
+							insert_at_pos(&buffer, cursor_pos, ' ');
+							cursor_pos++;
+						}
+					}
 				}
 				break;
 			case NONE:
@@ -119,9 +147,8 @@ int main(int argc, char** argv) {
 					printf("\x1b[%d;%dHSaved!", 24/2, (80/2)-6); fflush(stdout);
 					getchar();
 				}
-				if (a == 27) {
-					if (get_escape_seq() == ESCAPE)
-						program_running = 0;
+				if (toupper(a) == 'Q') {
+					program_running = 0;
 				}
 				break;
 		}
@@ -133,6 +160,9 @@ render:
 
 	
 	typing(0);
+	if (opened != NULL)
+		fprintf(opened, "%s", buffer);
+
 	fclose(opened);
 	return 0;
 }
