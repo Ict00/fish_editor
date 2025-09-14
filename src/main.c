@@ -160,8 +160,6 @@ render:
 
 	
 	typing(0);
-	if (opened != NULL)
-		fprintf(opened, "%s", buffer);
 
 	fclose(opened);
 	return 0;
