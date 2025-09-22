@@ -1,7 +1,7 @@
 SRC_DIR = src
 OBJ_DIR = obj
 
-CC = clang
+CC = gcc
 CFLAGS = -O3 -std=c23 -D_XOPEN_SOURCE=500 -g
 TARGET = build/fish_editor
 
@@ -13,6 +13,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
+	mkdir -p build
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
