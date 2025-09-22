@@ -2,7 +2,7 @@ SRC_DIR = src
 BUILD_DIR = build
 
 CC = gcc
-CFLAGS = -O3 -std=c23 -D_XOPEN_SOURCE=500 -g
+CFLAGS = -O3 -D_XOPEN_SOURCE=500 -g
 TARGET = build/fish_editor
 
 LDFLAGS = -O3
